@@ -38,11 +38,12 @@ uint8_t insert_note(Note note)
         sqlite3_bind_text(stmt, 2, note.title, -1, SQLITE_TRANSIENT);
         sqlite3_bind_text(stmt, 3, note.content, -1, SQLITE_TRANSIENT);
 
-        if(sqlite3_step(stmt) == SQLITE_DONE) {
-                return DB_SUCCESS;
+        if(sqlite3_step(stmt) != SQLITE_DONE) {
+                sqlite3_finalize(stmt);
+                return DB_EXEC_ERROR;
         }
         sqlite3_finalize(stmt);
-        return DB_EXEC_ERROR;
+        return DB_SUCCESS;
 }
 
 //----------------------------------------------------
@@ -56,14 +57,15 @@ Note* get_note(int id)
                 return NULL;
         }
         sqlite3_bind_int(stmt, 1, id);
-        if(sqlite3_step(stmt) == SQLITE_ROW) {
-                note->id = (int) sqlite3_column_int(stmt, 0);
-                strncpy(note->title, (char *) sqlite3_column_text(stmt, 1), NOTE_TITLE_MAX);
-                strncpy(note->content, (char *) sqlite3_column_text(stmt, 2), NOTE_CONTENT_MAX);
-                return note;
+        if(sqlite3_step(stmt) != SQLITE_ROW) {
+                sqlite3_finalize(stmt);
+                return NULL;
         }
+        note->id = (int) sqlite3_column_int(stmt, 0);
+        strncpy(note->title, (char *) sqlite3_column_text(stmt, 1), NOTE_TITLE_MAX);
+        strncpy(note->content, (char *) sqlite3_column_text(stmt, 2), NOTE_CONTENT_MAX);
         sqlite3_finalize(stmt);
-        return NULL;
+        return note;
 }
 
 //----------------------------------------------------
