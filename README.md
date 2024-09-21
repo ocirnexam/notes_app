@@ -6,7 +6,7 @@ This is a fun project to figure out building http_servers in C.
 
 ```
 mkdir build && cd build
-cmake ...
+cmake ..
 make
 sudo ./notes
 ```
