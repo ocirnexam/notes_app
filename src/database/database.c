@@ -1,6 +1,7 @@
 #include "database.h"
 
-static sqlite3 *db;
+static sqlite3_stmt* stmt = NULL;
+static sqlite3 *db = NULL;
 
 //----------------------------------------------------
 uint8_t create_database(char* filename)
@@ -30,33 +31,39 @@ uint8_t close_database(void)
 //----------------------------------------------------
 uint8_t insert_note(Note note)
 {
-        char* sql = sqlite3_mprintf("INSERT INTO NOTES (ID, TITLE, CONTENT) VALUES (%q, %q, %q);", note.id, note.title, note.content);
-        if(sqlite3_exec(db, sql, NULL, NULL, NULL)) {
-                sqlite3_free(sql);
+        if(sqlite3_prepare_v2(db, "INSERT INTO NOTES VALUES (?1, ?2, ?3);", -1, &stmt, 0)) {
                 return DB_EXEC_ERROR;
         }
-        sqlite3_free(sql);
-        return DB_SUCCESS;
+        sqlite3_bind_int(stmt, 1, note.id);
+        sqlite3_bind_text(stmt, 2, note.title, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, note.content, -1, SQLITE_TRANSIENT);
+
+        if(sqlite3_step(stmt) == SQLITE_DONE) {
+                return DB_SUCCESS;
+        }
+        sqlite3_finalize(stmt);
+        return DB_EXEC_ERROR;
 }
 
 //----------------------------------------------------
-Note get_note(int id)
+Note* get_note(int id)
 {
-        sqlite3_stmt* stmt = NULL;
-        Note note;
-        char* sql = sqlite3_mprintf("SELECT ID, TITLE, CONTENT FROM NOTES WHERE ID = %q;", id);
-        if(sqlite3_prepare_v2(db, sql, -1, &stmt, 0)) {
-                sqlite3_free(sql);
+        Note* note = malloc(sizeof(Note));
+        if(!note) {
+                return NULL;
+        }
+        if(sqlite3_prepare_v2(db, "SELECT ID, TITLE, CONTENT FROM NOTES WHERE ID=?1;", -1, &stmt, 0)) {
+                return NULL;
+        }
+        sqlite3_bind_int(stmt, id, 1);
+        if(sqlite3_step(stmt) == SQLITE_ROW) {
+                note->id = (int) sqlite3_column_int(stmt, 0);
+                note->title = (char *) sqlite3_column_text(stmt, 1);
+                note->content = (char *) sqlite3_column_text(stmt, 2);
                 return note;
         }
-        if(sqlite3_step(stmt) == SQLITE_ROW) {
-                note.id = (int) sqlite3_column_int(stmt, 0);
-                note.title = (char *) sqlite3_column_text(stmt, 1);
-                note.content = (char *) sqlite3_column_text(stmt, 2);
-        }
         sqlite3_finalize(stmt);
-        sqlite3_free(sql);
-        return note;
+        return NULL;
 }
 
 //----------------------------------------------------

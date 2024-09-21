@@ -2,6 +2,8 @@
 #define DATABASE_H_INCLUDED
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <stddef.h>
 #include <sqlite3.h>
 
@@ -36,7 +38,7 @@ uint8_t insert_note(Note);
  * Returns a note based on the ID
  * @param id: int
  */
-Note get_note(int);
+Note* get_note(int);
 
 /*
  * Returns all notes found in the database
