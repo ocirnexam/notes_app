@@ -4,18 +4,16 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <stddef.h>
 #include <sqlite3.h>
+
+#include "note/note.h"
+#include "linked_list/linked_list.h"
 
 #define DB_OPEN_ERROR 1
 #define DB_EXEC_ERROR 2
 #define DB_SUCCESS 0
-
-typedef struct {
-        int id;
-        char* title;
-        char* content;
-} Note;
 
 /*
  * Creates a sqlite database, if there is no existing one, else opens it
@@ -43,6 +41,6 @@ Note* get_note(int);
 /*
  * Returns all notes found in the database
  */
-Note* get_all_notes(void);
+linked_list get_all_notes(void);
 
 #endif

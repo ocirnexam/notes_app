@@ -55,11 +55,11 @@ Note* get_note(int id)
         if(sqlite3_prepare_v2(db, "SELECT ID, TITLE, CONTENT FROM NOTES WHERE ID=?1;", -1, &stmt, 0)) {
                 return NULL;
         }
-        sqlite3_bind_int(stmt, id, 1);
+        sqlite3_bind_int(stmt, 1, id);
         if(sqlite3_step(stmt) == SQLITE_ROW) {
                 note->id = (int) sqlite3_column_int(stmt, 0);
-                note->title = (char *) sqlite3_column_text(stmt, 1);
-                note->content = (char *) sqlite3_column_text(stmt, 2);
+                strncpy(note->title, (char *) sqlite3_column_text(stmt, 1), NOTE_TITLE_MAX);
+                strncpy(note->content, (char *) sqlite3_column_text(stmt, 2), NOTE_CONTENT_MAX);
                 return note;
         }
         sqlite3_finalize(stmt);
@@ -67,7 +67,24 @@ Note* get_note(int id)
 }
 
 //----------------------------------------------------
-Note* get_all_notes(void)
+linked_list get_all_notes(void)
 {
-
+        
+        if(sqlite3_prepare_v2(db, "SELECT ID, TITLE, CONTENT FROM NOTES;", -1, &stmt, 0)) {
+                return NULL;
+        }
+        linked_list list = linked_list_create();
+        while(sqlite3_step(stmt) == SQLITE_ROW) {
+                Note* note = malloc(sizeof(Note));
+                if(note == NULL) {
+                        linked_list_free(list);
+                        return NULL;
+                }
+                note->id = (int) sqlite3_column_int(stmt, 0);
+                strncpy(note->title, (char *) sqlite3_column_text(stmt, 1), NOTE_TITLE_MAX);
+                strncpy(note->content, (char *) sqlite3_column_text(stmt, 2), NOTE_CONTENT_MAX);
+                list = linked_list_add(list, note);
+        }
+        sqlite3_finalize(stmt);
+        return list;
 }
