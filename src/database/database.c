@@ -46,6 +46,7 @@ uint8_t db_insert(Note note)
         return DB_SUCCESS;
 }
 
+//----------------------------------------------------
 uint8_t db_delete(int id)
 
 {
