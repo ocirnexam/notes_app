@@ -9,19 +9,21 @@ int main(int argc, char* argv[])
         Note* note;
         linked_list notes;
 
-        if(!create_database("/usr/share/notes/notes.db")) {
-                insert_note(note1);
-                insert_note(note2);
-                insert_note(note3);
-                note = get_note(2);
+        if(!db_create("/usr/share/notes/notes.db")) {
+                db_insert(note1);
+                db_insert(note2);
+                db_insert(note3);
+                note = db_get(2);
                 if (note) {
                         printf("ID: %d\nTITLE: %s\nCONTENT: %s\n", note->id, note->title, note->content);
                         free(note);
                 }
-                notes = get_all_notes();
+                printf("\n\nPrint all notes:\n\n");
+                db_delete(2);
+                notes = db_get_all();
                 linked_list_print(notes);
                 linked_list_free(notes);
-                close_database();
+                db_close();
                 return 0;
         }
         return 1;
