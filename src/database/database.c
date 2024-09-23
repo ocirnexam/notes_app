@@ -95,7 +95,7 @@ linked_list db_get_all(void)
         while(sqlite3_step(stmt) == SQLITE_ROW) {
                 Note* note = malloc(sizeof(Note));
                 if(note == NULL) {
-                        linked_list_free(list);
+                        linked_list_free(&list);
                         return NULL;
                 }
                 note->id = (int) sqlite3_column_int(stmt, 0);

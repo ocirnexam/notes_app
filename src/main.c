@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
                 db_delete(2);
                 notes = db_get_all();
                 linked_list_print(notes);
-                linked_list_free(notes);
+                linked_list_free(&notes);
                 db_close();
                 return 0;
         }

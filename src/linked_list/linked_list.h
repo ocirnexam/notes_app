@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include "note/note.h"
 
@@ -16,6 +17,6 @@ typedef node_t* linked_list;
 linked_list linked_list_create(void);
 linked_list linked_list_add(linked_list list, Note* note);
 void linked_list_print(linked_list list);
-void linked_list_free(linked_list list);
+uint32_t linked_list_free(linked_list* list);
 
 #endif

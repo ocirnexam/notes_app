@@ -11,6 +11,7 @@ linked_list linked_list_create()
 
     head->note = NULL;
     head->next = NULL;
+    return head;
 }
 
 //----------------------------------------------------
@@ -35,18 +36,23 @@ linked_list linked_list_add(linked_list list, Note* note)
     return head;
 }
 
-void linked_list_free(linked_list list)
+uint32_t linked_list_free(linked_list* list)
 {   
-    node_t *current = list;
-    node_t *temp = NULL;
+    linked_list current = *list;
+    linked_list temp = NULL;
+    int i = 0;
     while(current != NULL) {
         if(current->note != NULL) {
             free(current->note);
+            current->note = NULL;
         }
+        ++i;
         temp = current;
         current = current->next;
         free(temp);
+        temp = NULL;
     }
+    return i;
 }
 
 void linked_list_print(linked_list list)
