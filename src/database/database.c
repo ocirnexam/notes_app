@@ -4,7 +4,7 @@ static sqlite3_stmt* stmt = NULL;
 static sqlite3 *db = NULL;
 
 //----------------------------------------------------
-uint8_t create_database(char* filename)
+uint8_t db_create(char* filename)
 {
         const char sql[] = "CREATE TABLE IF NOT EXISTS NOTES("  
                            "ID INT PRIMARY        KEY      NOT NULL," 
@@ -20,7 +20,7 @@ uint8_t create_database(char* filename)
 }
 
 //----------------------------------------------------
-uint8_t close_database(void)
+uint8_t db_close(void)
 {
         if(db) {
                 sqlite3_close(db);
@@ -29,7 +29,7 @@ uint8_t close_database(void)
 }
 
 //----------------------------------------------------
-uint8_t insert_note(Note note)
+uint8_t db_insert(Note note)
 {
         if(sqlite3_prepare_v2(db, "INSERT INTO NOTES VALUES (?1, ?2, ?3);", -1, &stmt, 0)) {
                 return DB_EXEC_ERROR;
@@ -46,8 +46,23 @@ uint8_t insert_note(Note note)
         return DB_SUCCESS;
 }
 
+uint8_t db_delete(int id)
+
+{
+        if(sqlite3_prepare_v2(db, "DELETE FROM NOTES WHERE ID=?1", -1, &stmt, 0)) {
+                return DB_EXEC_ERROR;
+        }
+        sqlite3_bind_int(stmt, 1, id);
+        if(sqlite3_step(stmt) != SQLITE_DONE) {
+                sqlite3_finalize(stmt);
+                return DB_EXEC_ERROR;
+        }
+        sqlite3_finalize(stmt);
+        return DB_SUCCESS;
+}
+
 //----------------------------------------------------
-Note* get_note(int id)
+Note* db_get(int id)
 {
         Note* note = malloc(sizeof(Note));
         if(!note) {
@@ -69,7 +84,7 @@ Note* get_note(int id)
 }
 
 //----------------------------------------------------
-linked_list get_all_notes(void)
+linked_list db_get_all(void)
 {
         
         if(sqlite3_prepare_v2(db, "SELECT ID, TITLE, CONTENT FROM NOTES;", -1, &stmt, 0)) {

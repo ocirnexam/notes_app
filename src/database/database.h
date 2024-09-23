@@ -19,28 +19,34 @@
  * Creates a sqlite database, if there is no existing one, else opens it
   * @param filename: char *
  */
-uint8_t create_database(char *);
+uint8_t db_create(char *);
 
 /*
  * Closes a sqlite database
  */
-uint8_t close_database(void);
+uint8_t db_close(void);
 
 /*
  * Inserts a note into the database
  * @param note: Note
  */
-uint8_t insert_note(Note);
+uint8_t db_insert(Note);
+
+/*
+ * Deletes a Note in the database
+ * @param id: int
+*/
+uint8_t db_delete(int);
 
 /*
  * Returns a note based on the ID
  * @param id: int
  */
-Note* get_note(int);
+Note* db_get(int);
 
 /*
  * Returns all notes found in the database
  */
-linked_list get_all_notes(void);
+linked_list db_get_all(void);
 
 #endif
