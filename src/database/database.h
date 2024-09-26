@@ -13,6 +13,7 @@
 
 #define DB_OPEN_ERROR 1
 #define DB_EXEC_ERROR 2
+#define DB_PREPARE_ERROR 3
 #define DB_SUCCESS 0
 
 /*
