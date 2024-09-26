@@ -60,7 +60,7 @@ void linked_list_print(linked_list list)
     linked_list current = list;
 
     while (current != NULL) {
-        printf("---------------------------------\nID: %d\nTITLE: %s\nCONTENT: %s\n", current->note->id, current->note->title, current->note->content);
+        printf("---------------------------------\nID: %d\nTITLE: %s\n", current->note->id, current->note->title);
         current = current->next;
     }
 }

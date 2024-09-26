@@ -32,7 +32,7 @@ uint8_t db_close(void)
 uint8_t db_insert(Note note)
 {
         if(sqlite3_prepare_v2(db, "INSERT INTO NOTES VALUES (?1, ?2, ?3);", -1, &stmt, 0)) {
-                return DB_EXEC_ERROR;
+                return DB_PREPARE_ERROR;
         }
         sqlite3_bind_int(stmt, 1, note.id);
         sqlite3_bind_text(stmt, 2, note.title, -1, SQLITE_TRANSIENT);
@@ -50,11 +50,13 @@ uint8_t db_insert(Note note)
 uint8_t db_delete(int id)
 
 {
-        if(sqlite3_prepare_v2(db, "DELETE FROM NOTES WHERE ID=?1", -1, &stmt, 0)) {
-                return DB_EXEC_ERROR;
+        if(sqlite3_prepare_v2(db, "DELETE FROM NOTES WHERE ID=?1;", -1, &stmt, 0)) {
+                return DB_PREPARE_ERROR;
         }
         sqlite3_bind_int(stmt, 1, id);
-        if(sqlite3_step(stmt) != SQLITE_DONE) {
+        int result = sqlite3_step(stmt);
+        if(result != SQLITE_DONE) {
+                printf("Statement result error: %d\n", result);
                 sqlite3_finalize(stmt);
                 return DB_EXEC_ERROR;
         }
